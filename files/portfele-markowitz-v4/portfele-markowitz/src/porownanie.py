@@ -1,8 +1,5 @@
 """
 Porównanie portfeli: wspólny wykres granic efektywnych i tabela zbiorcza.
-Uruchom PO przeliczeniu portfeli (portfel_*.py) – korzysta z plików w wyniki/.
-Uwaga interpretacyjna: położenie jednej granicy nad drugą nie dowodzi, że portfel osiągnie
-lepsze wyniki w przyszłości – granice liczone są in-sample (okres uczący 2012–2020).
 """
 import glob
 import os
