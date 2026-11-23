@@ -1,4 +1,4 @@
-# Portfele – optymalizacja Markowitza (wersja 2, wg uwag promotora)
+# Portfele – optymalizacja Markowitza 
 
 ## Układ badania
 - **Horyzont:** 2012–2025. **Okres uczący** (estymacja wag): 2012–2020. **Okresy testowe:** 2021, 2021–2023, 2021–2025.
