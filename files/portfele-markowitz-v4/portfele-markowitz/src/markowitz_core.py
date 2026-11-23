@@ -1,15 +1,5 @@
 """
 markowitz_core.py – wspólna logika dla wszystkich portfeli (metoda Markowitza, long-only).
-
-Układ badania (zgodnie z uwagami promotora):
-  * okres uczący (estymacja wag):   2012-01-01 – 2020-12-31
-  * okresy testowe (buy-and-hold):  2021, 2021–2023, 2021–2025
-  * stopa wolna od ryzyka: stopa referencyjna NBP (przy konstrukcji portfela: z dnia 2020-12-31;
-    w okresie testowym: średnia ze stóp na koniec poszczególnych lat okresu)
-  * waluta: wszystko przeliczane na PLN (kursy USD/PLN w data/USDPLN.csv)
-  * strategie: równe wagi (1/N), minimalna wariancja, maksymalny Sharpe
-  * optymalizacja z kontrolą zbieżności i ograniczeń (kilka punktów startowych)
-  * wrażliwość na limit maksymalnej wagi pojedynczego aktywa
 """
 import os
 import numpy as np
