@@ -1,15 +1,7 @@
 """
 Portfel 2 – S&P 500 (USD) – optymalizacja Markowitza (long-only)
 
-Skrypt:
-  1. wczytuje ceny z pliku CSV i liczy dzienne stopy zwrotu,
-  2. wyznacza dwa portfele efektywne:
-       - minimalnego ryzyka (min. wariancja),
-       - najlepszego stosunku zysku do ryzyka (maks. współczynnik Sharpe'a),
-  3. wyznacza granicę efektywną,
-  4. zapisuje wagi i wyniki do Excela oraz wykres do PNG.
 
-Uruchomienie (z katalogu głównego repo):  python src/portfel_2_sp500_markowitz.py
 Wymagane biblioteki: numpy, pandas, scipy, matplotlib, openpyxl
 """
 import os
