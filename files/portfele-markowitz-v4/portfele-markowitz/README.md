@@ -34,4 +34,3 @@ Wygenerowane Excele i wykresy trafiają do `wyniki/`. Pierwsza, starsza wersja (
 - **Gotowe:** wszystkie 4 portfele policzone w PLN na pełnym horyzoncie 2012–2025 (dane z Yahoo Finance).
 - **Odsiew spółek:** jeśli spółka nie miała pełnej historii notowań od początku 2012 r. (np. Dino, XTB, Alior, Meta, AbbVie), skrypt automatycznie ją pomija – pełna lista odrzuconych tickerów jest w arkuszu *Parametry* w Excelu.
 - **Do sprawdzenia:** stopy NBP sprzed 2025 r. wpisane z pamięci – trzeba je jeszcze potwierdzić w archiwum na `nbp.pl` (kolumna `status`).
-- **Do dopisania / obgadania na konsultacjach:** kryterium doboru spółek do P1 i P2 (wraz z opisem błędu przeżycia) oraz testy istotności statystycznej różnic na samym końcu badania.
