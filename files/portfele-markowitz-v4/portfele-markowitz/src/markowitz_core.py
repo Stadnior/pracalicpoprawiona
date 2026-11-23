@@ -1,5 +1,6 @@
 """
 markowitz_core.py – wspólna logika dla wszystkich portfeli (metoda Markowitza, long-only).
+"""
 import os
 import numpy as np
 import pandas as pd
