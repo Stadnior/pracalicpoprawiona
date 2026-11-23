@@ -14,7 +14,7 @@
 | `src/portfel_1_gpw.py` | Polskie spółki z GPW (w PLN) | `data/portfel_1_GPW_2012_2025.csv` |
 | `src/portfel_2_sp500.py` | Spółki z amerykańskiego S&P 500 (USD → PLN) | `data/portfel_2_SP500_2012_2025.csv` |
 | `src/portfel_3_etf_akcyjne.py` | 3 ETF-y akcyjne na różne rynki: `EEM` (wschodzące), `EFA` (rozwinięte bez USA), `SPY` (USA) – `QQQ` usunięty przez silną korelację ze `SPY` | `data/portfel_3_ETF_20261013_1548.csv` |
-| `src/portfel_4_etf_wieloaktywowy.py` | ETF-y akcyjne z P3 + złoto (`GLD`), obligacje USA (`TLT`) i nieruchomości (`VNQ`) – dywersyfikacja międzyklasowa | j.w. |
+| `src/portfel_4_etf_wieloaktywowy.py` | ETF-y akcyjne z P3 + złoto (`GLD`), obligacje USA (`TLT`) i nieruchomości (`VNQ`) – dywersyfikacja międzyklasowa | jak wyzej |
 
 Cała wspólna logika siedzi w `src/markowitz_core.py`, a `src/porownanie.py` skleja wyniki ze wszystkich portfeli w jeden wspólny wykres granic efektywnych i zbiorczy plik Excela.
 
