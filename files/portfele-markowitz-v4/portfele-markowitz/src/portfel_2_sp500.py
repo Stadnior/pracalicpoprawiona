@@ -5,7 +5,7 @@ CFG = dict(
     nazwa="P2_SP500",
     tytul="Portfel 2 – akcje S&P 500",
     plik="data/portfel_2_SP500_2012_2025.csv",
-    waluta="USD",          # "PLN" – ceny już w złotych; "USD" – zostaną przeliczone na PLN
+    waluta="USD",          # usd na pln 
     usun=["^GSPC"],
     kolumny=None,
 )
