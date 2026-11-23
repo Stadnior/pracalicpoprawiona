@@ -1,9 +1,4 @@
-"""
-Pobiera ceny z Yahoo Finance (biblioteka yfinance) dla portfeli 1 i 2 oraz kurs USD/PLN.
-Uruchom RAZ na swoim komputerze:   pip install yfinance   a potem   python src/pobierz_dane.py
-Wynik: pliki CSV w katalogu data/ (w tym samym formacie co dotychczasowe).
-Okres: 2011-12-01 – 2025-12-31 (horyzont badania 2012–2025).
-"""
+
 import os
 import pandas as pd
 import yfinance as yf
