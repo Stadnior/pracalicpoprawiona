@@ -16,21 +16,18 @@
 | `src/portfel_3_etf_akcyjne.py` | 3 ETF-y akcyjne na różne rynki: `EEM` (wschodzące), `EFA` (rozwinięte bez USA), `SPY` (USA) – `QQQ` usunięty przez silną korelację ze `SPY` | `data/portfel_3_ETF_20261013_1548.csv` |
 | `src/portfel_4_etf_wieloaktywowy.py` | ETF-y akcyjne z P3 + złoto (`GLD`), obligacje USA (`TLT`) i nieruchomości (`VNQ`) – dywersyfikacja międzyklasowa | jak wyzej |
 
-Cała wspólna logika siedzi w `src/markowitz_core.py`, a `src/porownanie.py` skleja wyniki ze wszystkich portfeli w jeden wspólny wykres granic efektywnych i zbiorczy plik Excela.
 
 ## Jak to uruchomić
 ```bash
 pip install -r requirements.txt
-python src/pobierz_dane.py        # raz: pobiera ceny portfeli 1 i 2 oraz kurs USD/PLN do data/
+python src/pobierz_dane.py    
 python src/portfel_1_gpw.py
 python src/portfel_2_sp500.py
 python src/portfel_3_etf_akcyjne.py
 python src/portfel_4_etf_wieloaktywowy.py
 python src/porownanie.py
 ```
-Wygenerowane Excele i wykresy trafiają do `wyniki/`. Pierwsza, starsza wersja (na 3 latach danych, bez podziału train/test) jest w `archiwum/`.
 
 ## Stan prac i rzeczy do domknięcia
 - **Gotowe:** wszystkie 4 portfele policzone w PLN na pełnym horyzoncie 2012–2025 (dane z Yahoo Finance).
 - **Odsiew spółek:** jeśli spółka nie miała pełnej historii notowań od początku 2012 r. (np. Dino, XTB, Alior, Meta, AbbVie), skrypt automatycznie ją pomija – pełna lista odrzuconych tickerów jest w arkuszu *Parametry* w Excelu.
-- **Do sprawdzenia:** stopy NBP sprzed 2025 r. wpisane z pamięci – trzeba je jeszcze potwierdzić w archiwum na `nbp.pl` (kolumna `status`).
