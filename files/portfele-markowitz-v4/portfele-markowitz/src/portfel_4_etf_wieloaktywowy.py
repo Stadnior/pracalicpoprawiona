@@ -5,7 +5,7 @@ CFG = dict(
     nazwa="P4_ETF_WIELOAKTYWOWY",
     tytul="Portfel 4 – ETF akcyjne + pozostałe klasy aktywów",
     plik="data/portfel_3_ETF_20261013_1548.csv",
-    waluta="USD",          # "PLN" – ceny już w złotych; "USD" – zostaną przeliczone na PLN
+    waluta="USD",          #ceny juz w zlotych, usd na pln p
     usun=[],
     kolumny=["EEM", "EFA", "SPY", "GLD", "TLT", "VNQ"],
 )
