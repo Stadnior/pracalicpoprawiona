@@ -1,6 +1,5 @@
 """
 markowitz_core.py – wspólna logika dla wszystkich portfeli (metoda Markowitza, long-only).
-"""
 import os
 import numpy as np
 import pandas as pd
@@ -40,6 +39,29 @@ def rf_okresu_testowego(koniec):
     return float(np.mean([rf_nbp(f"{y}-12-31") for y in lata]))
 
 
+def swieta_pl(lata):
+    """Dni ustawowo wolne od pracy w Polsce (GPW nieczynna)."""
+    sw = set()
+    stale = [(1, 1), (1, 6), (5, 1), (5, 3), (8, 15), (11, 1), (11, 11), (12, 25), (12, 26)]
+    for y in lata:
+        for m, d in stale:
+            sw.add(pd.Timestamp(y, m, d))
+        a = y % 19
+        b, c = divmod(y, 100)
+        d, e = divmod(b, 4)
+        f = (b + 8) // 25
+        g = (b - f + 1) // 3
+        h = (19 * a + b - d - g + 15) % 30
+        i, k = divmod(c, 4)
+        l = (32 + 2 * e + 2 * i - h - k) % 7
+        m_val = (a + 11 * h + 22 * l) // 451
+        month, day = divmod(h + l - 7 * m_val + 114, 31)
+        wielkanoc = pd.Timestamp(y, month, day + 1)
+        sw.add(wielkanoc + pd.Timedelta(days=1))   # Poniedziałek Wielkanocny
+        sw.add(wielkanoc + pd.Timedelta(days=60))  # Boże Ciało
+    return sw
+
+
 def wczytaj_ceny(cfg):
     if not os.path.exists(cfg["plik"]):
         raise FileNotFoundError(
@@ -64,8 +86,8 @@ def na_pln(px, waluta):
     return px.mul(fx, axis=0), "PLN"
 
 
-def przygotuj(px):
-    """Wybiera aktywa z kompletną historią w okresie uczącym i testowym; zwraca ceny + listę odrzuconych."""
+def przygotuj(px, waluta="PLN"):
+    """Wybiera aktywa z kompletną historią i usuwa dni niehandlowe (błędy Yahoo dla GPW)."""
     start, koniec_ucz = OKRES_UCZACY
     koniec_test = max(k for _, k in OKRESY_TESTOWE.values())
     px = px.loc[start:koniec_test]
@@ -78,14 +100,24 @@ def przygotuj(px):
         elif px[c].last_valid_index() < pd.Timestamp(koniec_test) - pd.Timedelta(days=10):
             odrzucone[c] = "brak notowań do końca okresu testowego"
     px = px.drop(columns=list(odrzucone)).ffill(limit=5).dropna()
+
+    # Usunięcie świąt i dni bez obrotu dla GPW (nie dotyka S&P 500 ani ETF-ów)
+    if waluta == "PLN":
+        sw = swieta_pl(range(px.index.year.min(), px.index.year.max() + 1))
+        px = px.loc[~px.index.isin(sw)]
+        if px.shape[1] >= 5:
+            brak_handlu = (px.pct_change().abs() > 1e-12).mean(axis=1) < 0.20
+            brak_handlu.iloc[0] = False
+            px = px.loc[~brak_handlu]
     return px, odrzucone
 
 
 # ------------------------------------------------------------- miary
-def metryki(r, rf):
+def metryki(r, rf, lata=None):
     """r – dzienne proste stopy zwrotu; rf – roczna stopa wolna od ryzyka (ułamek)."""
     cum = (1 + r).cumprod()
-    lata = (r.index[-1] - r.index[0]).days / 365.25
+    if lata is None:
+        lata = (r.index[-1] - r.index[0]).days / 365.25
     sr, vol = r.mean() * DNI, r.std() * np.sqrt(DNI)
     return {"Całkowita stopa zwrotu": cum.iloc[-1] - 1,
             "CAGR": cum.iloc[-1] ** (1 / lata) - 1,
@@ -162,7 +194,7 @@ def run_portfolio(cfg):
     nazwa = cfg["nazwa"]
     print(f"\n######## {cfg['tytul']} ########")
     px, waluta = na_pln(wczytaj_ceny(cfg), cfg["waluta"])
-    px, odrzucone = przygotuj(px)
+    px, odrzucone = przygotuj(px, cfg["waluta"])
     for c, powod in odrzucone.items():
         print(f"   pominięto {c}: {powod}")
     n = px.shape[1]
@@ -184,15 +216,18 @@ def run_portfolio(cfg):
         wagi[("Maks. Sharpe", l)] = w_ms
 
     # --- miary: próba ucząca (stałe wagi) i testowa (buy-and-hold)
+    lata_ucz = pd.Timestamp(OKRES_UCZACY[1]).year - pd.Timestamp(OKRES_UCZACY[0]).year + 1
     wiersze = []
     for (strat, l), w in wagi.items():
         wiersze.append({"Portfel": nazwa, "Strategia": strat, "Limit wagi": l, "Okres": "uczący 2012-2020",
-                        **metryki(ret @ w, rf0)})
+                        **metryki(ret @ w, rf0, lata=lata_ucz)})
         for okres, (od, do) in OKRESY_TESTOWE.items():
             pt = px.loc[baza:do]
             v = wartosc_buy_and_hold(pt, pd.Series(w, index=px.columns))
+            lata_test = pd.Timestamp(do).year - pd.Timestamp(od).year + 1
             wiersze.append({"Portfel": nazwa, "Strategia": strat, "Limit wagi": l,
-                            "Okres": f"test {okres}", **metryki(v.pct_change().dropna(), rf_okresu_testowego(do))})
+                            "Okres": f"test {okres}",
+                            **metryki(v.pct_change().dropna(), rf_okresu_testowego(do), lata=lata_test)})
     tab = pd.DataFrame(wiersze)
     tab["Waluta"] = waluta
 
@@ -229,7 +264,11 @@ def run_portfolio(cfg):
             ax.plot(v.index, v.values, label=s)
     for okres, (od, do) in list(OKRESY_TESTOWE.items())[:-1]:
         ax.axvline(pd.Timestamp(do), color="grey", ls=":", lw=1)
-    ax.set_title(f"{cfg['tytul']}\nWartość portfela w okresie testowym (start {KAPITAL:,.0f}, kup i trzymaj)".replace(",", " "), fontsize=11)
+    kap_txt = f"{KAPITAL:,.0f}".replace(",", " ")
+    ax.set_title(
+        f"{cfg['tytul']}\nWartość portfela w okresie testowym (start {kap_txt} {waluta}, kup i trzymaj)",
+        fontsize=11,
+    )
     ax.set_ylabel(f"Wartość ({waluta})"); ax.legend(); fig.tight_layout()
     fig.savefig(f"{WYJSCIE}{nazwa}_wartosc.png", dpi=130)
     plt.close(fig)
